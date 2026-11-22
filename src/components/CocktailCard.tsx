@@ -1,5 +1,6 @@
 import type { Cocktail } from '../data/types'
 import { cn } from '../lib/cn'
+import { requiredIngredientCount } from '../lib/recipe'
 import { GlassIcon } from './GlassIcon'
 
 interface CocktailCardProps {
@@ -7,10 +8,12 @@ interface CocktailCardProps {
   active: boolean
   /** The active row is only an implicit default (no route), which phones don't display. */
   implicit?: boolean
+  /** Which number to show on the right: follows the list's sort order. */
+  metric?: 'abv' | 'ingredients'
 }
 
 /** One row in the drink list. It's a link, so the URL hash drives selection. */
-export function CocktailCard({ cocktail, active, implicit = false }: CocktailCardProps) {
+export function CocktailCard({ cocktail, active, implicit = false, metric = 'abv' }: CocktailCardProps) {
   return (
     <a
       href={`#/recipe/${cocktail.id}`}
@@ -30,12 +33,18 @@ export function CocktailCard({ cocktail, active, implicit = false }: CocktailCar
       <span className="min-w-0 flex-1">
         <span className="block truncate text-[15px] font-medium">{cocktail.name}</span>
         <span className="block truncate text-[13px] text-muted">
-          {cocktail.baseSpirit}, {cocktail.category.toLowerCase()}
+          {cocktail.baseSpirit}
         </span>
       </span>
-      <span className="mr-1.5 text-[13px] text-faint tabular-nums" title="Becsült alkoholtartalom">
-        {cocktail.abv}%
-      </span>
+      {metric === 'ingredients' ? (
+        <span className="mr-1.5 shrink-0 text-[13px] text-faint tabular-nums">
+          {requiredIngredientCount(cocktail)} hozzávaló
+        </span>
+      ) : (
+        <span className="mr-1.5 shrink-0 text-[13px] text-faint tabular-nums" title="Becsült alkoholtartalom">
+          {cocktail.abv}%
+        </span>
+      )}
     </a>
   )
 }

@@ -13,7 +13,7 @@ interface HeaderProps {
 
 export function Header({ showBack, onBack, onOpenGuide }: HeaderProps) {
   return (
-    <header className="pt-safe px-safe mx-auto grid w-full max-w-7xl grid-cols-[1fr_auto_1fr] items-center pb-3 md:px-6">
+    <header className="pt-safe px-safe grid w-full grid-cols-[1fr_auto_1fr] items-center pb-3 md:px-6 xl:px-10">
       <div className="justify-self-start">
         {showBack && (
           <button

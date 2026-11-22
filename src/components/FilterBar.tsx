@@ -1,20 +1,27 @@
 import { forwardRef } from 'react'
-import { Search, X } from 'lucide-react'
-import { BASE_SPIRITS, CATEGORIES } from '../data/types'
+import * as ToggleGroup from '@radix-ui/react-toggle-group'
+import { ArrowDown, ArrowUp, Search, X } from 'lucide-react'
+import { BASE_SPIRITS } from '../data/types'
+import type { SortDir, SortKey } from '../lib/recipe'
 import { TogglePills } from './ui/toggle-pills'
 
+const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: 'name', label: 'Név' },
+  { key: 'abv', label: 'Alkohol' },
+  { key: 'ingredients', label: 'Hozzávalók' },
+]
+
 export const ALL = 'Mind'
-export type CategoryFilter = (typeof CATEGORIES)[number] | typeof ALL
 export type SpiritFilter = (typeof BASE_SPIRITS)[number] | typeof ALL
 
-const CATEGORY_OPTIONS = [ALL, ...CATEGORIES] as const
 const SPIRIT_OPTIONS = [ALL, ...BASE_SPIRITS] as const
 
 interface FilterBarProps {
   query: string
   onQueryChange: (q: string) => void
-  category: CategoryFilter
-  onCategoryChange: (c: CategoryFilter) => void
+  sortKey: SortKey
+  sortDir: SortDir
+  onSortChange: (key: SortKey, dir: SortDir) => void
   spirit: SpiritFilter
   onSpiritChange: (s: SpiritFilter) => void
   resultCount: number
@@ -25,10 +32,22 @@ interface FilterBarProps {
 }
 
 export const FilterBar = forwardRef<HTMLInputElement, FilterBarProps>(function FilterBar(
-  { query, onQueryChange, category, onCategoryChange, spirit, onSpiritChange, resultCount, totalCount, onReset, onSubmit },
+  {
+    query,
+    onQueryChange,
+    sortKey,
+    sortDir,
+    onSortChange,
+    spirit,
+    onSpiritChange,
+    resultCount,
+    totalCount,
+    onReset,
+    onSubmit,
+  },
   searchRef,
 ) {
-  const isFiltered = query !== '' || category !== ALL || spirit !== ALL
+  const isFiltered = query !== '' || spirit !== ALL
 
   return (
     <div className="space-y-3">
@@ -68,7 +87,36 @@ export const FilterBar = forwardRef<HTMLInputElement, FilterBarProps>(function F
       </div>
 
       <TogglePills label="Alapszesz" options={SPIRIT_OPTIONS} value={spirit} onChange={onSpiritChange} />
-      <TogglePills label="Stílus" options={CATEGORY_OPTIONS} value={category} onChange={onCategoryChange} />
+
+      <div className="flex items-center gap-2">
+        <span className="shrink-0 text-[13px] text-muted">Rendezés</span>
+        <ToggleGroup.Root
+          type="single"
+          aria-label="Rendezés"
+          value={sortKey}
+          // Pressing the active option again (Radix reports '') flips the direction.
+          onValueChange={(v) =>
+            v ? onSortChange(v as SortKey, 'asc') : onSortChange(sortKey, sortDir === 'asc' ? 'desc' : 'asc')
+          }
+          className="flex gap-1.5"
+        >
+          {SORT_OPTIONS.map(({ key, label }) => {
+            const active = key === sortKey
+            const Arrow = sortDir === 'asc' ? ArrowUp : ArrowDown
+            return (
+              <ToggleGroup.Item
+                key={key}
+                value={key}
+                aria-label={active ? `${label}, ${sortDir === 'asc' ? 'növekvő' : 'csökkenő'}` : label}
+                className="inline-flex h-8 items-center gap-1 rounded-full bg-panel px-3 text-[13px] text-muted transition-[background-color,color] duration-150 ease-out hover:text-fg data-[state=on]:bg-panel-2 data-[state=on]:text-fg pointer-coarse:h-10"
+              >
+                {label}
+                {active && <Arrow className="size-3.5" aria-hidden="true" />}
+              </ToggleGroup.Item>
+            )
+          })}
+        </ToggleGroup.Root>
+      </div>
 
       <div className="flex min-h-8 items-center justify-between px-1 text-[13px] text-muted">
         <p aria-live="polite" className="tabular-nums">

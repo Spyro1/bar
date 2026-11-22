@@ -1,6 +1,6 @@
 # Bar Book
 
-A bar book of 44 classic, modern, and everyday bar cocktails. It's a static React site with a list-and-detail layout, instant search (press `/`, step with ↑/↓), style and spirit filters, step-by-step recipes, a 1×/2×/4×/8× batch multiplier, metric measures (cl, switching to dl for larger amounts), and one-click recipe copying.
+A bar book of 21 popular party cocktails (Hungarian UI). It's a static React site with a list-and-detail layout, instant search (press `/`, step with ↑/↓), style and spirit filters, step-by-step recipes, a 1×/2×/4×/8× batch multiplier, metric measures (cl, switching to dl for larger amounts), and one-click recipe copying.
 
 **Stack:** Vite · React 19 · TypeScript · Tailwind CSS v4 · [Radix Primitives](https://www.radix-ui.com/primitives) (Dialog, ToggleGroup, Tooltip) · lucide-react icons
 

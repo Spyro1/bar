@@ -2,7 +2,6 @@ export const CATEGORIES = [
   'Klasszikus',
   'Sour',
   'Spritz és longdrink',
-  'Kevert, erős',
   'Trópusi és tiki',
   'Modern klasszikus',
   'Vacsora után',
@@ -13,12 +12,10 @@ export const BASE_SPIRITS = [
   'Gin',
   'Whisky',
   'Rum',
-  'Tequila és mezcal',
+  'Tequila',
   'Vodka',
-  'Brandy',
   'Aperitivo',
   'Likőr',
-  'Pezsgő és bor',
 ] as const
 export type BaseSpirit = (typeof BASE_SPIRITS)[number]
 

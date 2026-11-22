@@ -52,6 +52,26 @@ export function formatQuantity(ing: Ingredient, scale: number): string {
   return label ? `${toFraction(amount)} ${label}` : toFraction(amount)
 }
 
+/** Ingredients you must have on hand (optional ones don't count). */
+export function requiredIngredientCount(c: Cocktail): number {
+  return c.ingredients.filter((i) => !i.optional).length
+}
+
+export type SortKey = 'name' | 'abv' | 'ingredients'
+export type SortDir = 'asc' | 'desc'
+
+/** Orders drinks by the chosen key; ties fall back to name, A→Z. */
+export function sortCocktails(list: Cocktail[], key: SortKey, dir: SortDir): Cocktail[] {
+  const sign = dir === 'asc' ? 1 : -1
+  const byName = (a: Cocktail, b: Cocktail) => a.name.localeCompare(b.name, 'hu')
+  const primary: Record<SortKey, (a: Cocktail, b: Cocktail) => number> = {
+    name: byName,
+    abv: (a, b) => a.abv - b.abv,
+    ingredients: (a, b) => requiredIngredientCount(a) - requiredIngredientCount(b),
+  }
+  return [...list].sort((a, b) => sign * primary[key](a, b) || byName(a, b))
+}
+
 /** Total liquid volume of the recipe, ignoring count-based units. */
 export function totalVolume(c: Cocktail, scale: number): string {
   const cl = c.ingredients.reduce((sum, i) => (i.unit === 'cl' && !i.optional ? sum + i.amount : sum), 0)

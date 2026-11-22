@@ -1,11 +1,11 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import { cocktails } from './data/cocktails'
 import type { BaseSpirit } from './data/types'
-import { matchesQuery } from './lib/recipe'
+import { matchesQuery, sortCocktails, type SortDir, type SortKey } from './lib/recipe'
 import { cn } from './lib/cn'
 import { useHashRoute } from './hooks/useHashRoute'
 import { Header } from './components/Header'
-import { ALL, FilterBar, type CategoryFilter, type SpiritFilter } from './components/FilterBar'
+import { ALL, FilterBar, type SpiritFilter } from './components/FilterBar'
 import { CocktailCard } from './components/CocktailCard'
 import { RecipeDetail } from './components/RecipeDetail'
 import { BarGuide } from './components/BarGuide'
@@ -19,8 +19,9 @@ const SPLIT_VIEW = '(min-width: 768px)'
 export default function App() {
   const { path, recipeId, navigate } = useHashRoute()
   const [query, setQuery] = useState('')
-  const [category, setCategory] = useState<CategoryFilter>(ALL)
   const [spirit, setSpirit] = useState<SpiritFilter>(ALL)
+  const [sortKey, setSortKey] = useState<SortKey>('name')
+  const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [guideOpen, setGuideOpen] = useState(false)
   const deferredQuery = useDeferredValue(query)
   const searchRef = useRef<HTMLInputElement>(null)
@@ -28,15 +29,12 @@ export default function App() {
 
   const results = useMemo(
     () =>
-      cocktails
-        .filter(
-          (c) =>
-            (category === ALL || c.category === category) &&
-            (spirit === ALL || c.baseSpirit === spirit) &&
-            matchesQuery(c, deferredQuery),
-        )
-        .sort((a, b) => a.name.localeCompare(b.name, 'hu')),
-    [category, spirit, deferredQuery],
+      sortCocktails(
+        cocktails.filter((c) => (spirit === ALL || c.baseSpirit === spirit) && matchesQuery(c, deferredQuery)),
+        sortKey,
+        sortDir,
+      ),
+    [spirit, deferredQuery, sortKey, sortDir],
   )
 
   // In split view the recipe pane always shows something: the routed drink, or
@@ -69,7 +67,6 @@ export default function App() {
 
   const resetFilters = () => {
     setQuery('')
-    setCategory(ALL)
     setSpirit(ALL)
   }
 
@@ -135,11 +132,11 @@ export default function App() {
       <div className="flex h-dvh flex-col">
         <Header showBack={routed !== null} onBack={goBack} onOpenGuide={() => setGuideOpen(true)} />
 
-        <div className="px-safe pb-safe mx-auto flex min-h-0 w-full max-w-7xl flex-1 gap-6 md:px-6 md:pb-6">
+        <div className="pt-safe px-safe pb-safe flex min-h-0 w-full flex-1 gap-6 md:px-6 md:pt-5 md:pb-5 xl:gap-10 xl:px-10">
           <aside
             aria-label="Italok"
             className={cn(
-              'flex min-h-0 w-full min-w-0 flex-col md:flex md:w-[320px] md:shrink-0 lg:w-[360px]',
+              'flex min-h-0 w-full min-w-0 flex-col md:flex md:w-[300px] md:shrink-0 lg:w-[340px] 2xl:w-[380px]',
               routed && 'hidden',
             )}
           >
@@ -148,8 +145,12 @@ export default function App() {
                 ref={searchRef}
                 query={query}
                 onQueryChange={setQuery}
-                category={category}
-                onCategoryChange={setCategory}
+                sortKey={sortKey}
+                sortDir={sortDir}
+                onSortChange={(key, dir) => {
+                  setSortKey(key)
+                  setSortDir(dir)
+                }}
                 spirit={spirit}
                 onSpiritChange={setSpirit}
                 resultCount={results.length}
@@ -163,7 +164,12 @@ export default function App() {
               <ul ref={listRef} className="-mx-1 min-h-0 flex-1 space-y-0.5 overflow-y-auto px-1">
                 {results.map((c) => (
                   <li key={c.id}>
-                    <CocktailCard cocktail={c} active={c.id === active?.id} implicit={!routed} />
+                    <CocktailCard
+                      cocktail={c}
+                      active={c.id === active?.id}
+                      implicit={!routed}
+                      metric={sortKey === 'ingredients' ? 'ingredients' : 'abv'}
+                    />
                   </li>
                 ))}
               </ul>
@@ -171,7 +177,7 @@ export default function App() {
               <div className="flex flex-1 flex-col items-start gap-4 px-1 pt-6">
                 <p className="text-[15px] text-muted">
                   {query
-                    ? `Nincs találat erre: „${query}”. Próbálj egy hozzávalót, például limét vagy Camparit.`
+                    ? `Nincs találat erre: „${query}”. Próbálj egy hozzávalót, például limét vagy mentát.`
                     : 'Nincs a szűrőknek megfelelő ital.'}
                 </p>
                 <Button onClick={resetFilters}>Összes szűrő törlése</Button>
