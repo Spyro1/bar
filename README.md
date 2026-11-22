@@ -33,6 +33,8 @@ src/
 
 ### Adding a cocktail
 
+The UI and all recipe text are in Hungarian. Method steps are structured `{ action, detail }` objects: each `action` (see `StepAction` in `src/data/types.ts`) renders as a pictogram from `src/components/StepIcon.tsx` with its caption from `src/data/steps.ts`; `detail` is a few words of specifics.
+
 Append an object to `cocktails` in [`src/data/cocktails.ts`](src/data/cocktails.ts). TypeScript checks every field. Store liquid amounts in `cl`; the UI handles scaling and shows anything from 10 cl up in dl. Count units (`dash`, `leaf`, `barspoon`…) scale but are never converted. The `id` becomes the recipe's shareable URL: `#/recipe/<id>`.
 
 ```ts
@@ -40,14 +42,17 @@ Append an object to `cocktails` in [`src/data/cocktails.ts`](src/data/cocktails.
   id: 'tommys-margarita',
   name: "Tommy's Margarita",
   category: 'Sour',
-  baseSpirit: 'Tequila & Mezcal',
-  glassware: 'Rocks',
+  baseSpirit: 'Tequila és mezcal',
+  glassware: 'Tumbler',
   ingredients: [
     { amount: 6, unit: 'cl', name: 'Blanco tequila' },
-    { amount: 3, unit: 'cl', name: 'Lime juice', note: 'freshly squeezed' },
-    { amount: 1.5, unit: 'cl', name: 'Agave syrup' },
+    { amount: 3, unit: 'cl', name: 'Lime-lé', note: 'frissen facsart' },
+    { amount: 1.5, unit: 'cl', name: 'Agávészirup' },
   ],
-  instructions: ['Shake with ice.', 'Strain over fresh ice.'],
+  instructions: [
+    { action: 'shake', detail: 'jéggel, 10 mp' },
+    { action: 'strain', detail: 'friss jégre' },
+  ],
   // …tagline, ice, garnish, strength, abv, tastingNotes, flavorTags, bartenderTip, color
 }
 ```

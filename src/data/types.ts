@@ -1,41 +1,41 @@
 export const CATEGORIES = [
-  'Classic',
+  'Klasszikus',
   'Sour',
-  'Spritz & Highball',
-  'Stirred & Spirit-Forward',
-  'Tropical & Tiki',
-  'Modern Classic',
-  'After Dinner',
+  'Spritz és longdrink',
+  'Kevert, erős',
+  'Trópusi és tiki',
+  'Modern klasszikus',
+  'Vacsora után',
 ] as const
 export type Category = (typeof CATEGORIES)[number]
 
 export const BASE_SPIRITS = [
   'Gin',
-  'Whiskey',
+  'Whisky',
   'Rum',
-  'Tequila & Mezcal',
+  'Tequila és mezcal',
   'Vodka',
   'Brandy',
   'Aperitivo',
-  'Liqueur',
-  'Wine & Bubbly',
+  'Likőr',
+  'Pezsgő és bor',
 ] as const
 export type BaseSpirit = (typeof BASE_SPIRITS)[number]
 
-export type Strength = 'Light' | 'Medium' | 'Strong'
+export type Strength = 'Könnyű' | 'Közepes' | 'Erős'
 
 export type Glassware =
-  | 'Rocks'
-  | 'Double Rocks'
+  | 'Tumbler'
+  | 'Dupla tumbler'
   | 'Coupe'
   | 'Nick & Nora'
-  | 'Highball'
-  | 'Wine Glass'
-  | 'Copper Mug'
-  | 'Flute'
+  | 'Longdrinkes pohár'
+  | 'Borospohár'
+  | 'Rézbögre'
+  | 'Pezsgőspohár'
   | 'Hurricane'
-  | 'Julep Cup'
-  | 'Irish Coffee Glass'
+  | 'Julep kehely'
+  | 'Ír kávés pohár'
 
 /**
  * Liquid volumes are stored in centilitres (`cl`); the UI scales them and
@@ -48,15 +48,46 @@ export interface Ingredient {
   amount: number
   unit: Unit
   name: string
-  /** Short clarifier shown after the name, e.g. "freshly squeezed". */
+  /** Short clarifier shown after the name, e.g. "frissen facsart". */
   note?: string
   optional?: boolean
+}
+
+/** Bar actions, each drawn as a pictogram (see components/StepIcon.tsx). */
+export type StepAction =
+  | 'chill'
+  | 'warm'
+  | 'ice'
+  | 'add'
+  | 'muddle'
+  | 'dry-shake'
+  | 'shake'
+  | 'stir'
+  | 'strain'
+  | 'double-strain'
+  | 'pour'
+  | 'top'
+  | 'float'
+  | 'sink'
+  | 'blend'
+  | 'roll'
+  | 'rim'
+  | 'express'
+  | 'flame'
+  | 'garnish'
+  | 'drops'
+  | 'brew'
+
+export interface Step {
+  action: StepAction
+  /** A few words of specifics, e.g. "jéggel, 30 mp". */
+  detail?: string
 }
 
 export interface Cocktail {
   id: string
   name: string
-  /** One friendly line of microcopy for the card. */
+  /** One friendly line of microcopy. */
   tagline: string
   category: Category
   baseSpirit: BaseSpirit
@@ -70,8 +101,8 @@ export interface Cocktail {
   tastingNotes: string
   flavorTags: string[]
   ingredients: Ingredient[]
-  /** Ordered preparation steps. */
-  instructions: string[]
+  /** Ordered preparation steps, shown as pictograms. */
+  instructions: Step[]
   bartenderTip: string
   /** Liquid colour used to tint the glass illustration. */
   color: string

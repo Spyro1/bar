@@ -3,7 +3,7 @@ import { Search, X } from 'lucide-react'
 import { BASE_SPIRITS, CATEGORIES } from '../data/types'
 import { TogglePills } from './ui/toggle-pills'
 
-export const ALL = 'All'
+export const ALL = 'Mind'
 export type CategoryFilter = (typeof CATEGORIES)[number] | typeof ALL
 export type SpiritFilter = (typeof BASE_SPIRITS)[number] | typeof ALL
 
@@ -46,8 +46,8 @@ export const FilterBar = forwardRef<HTMLInputElement, FilterBarProps>(function F
             }
           }}
           enterKeyHint="search"
-          placeholder="Search drinks or ingredients"
-          aria-label="Search drinks or ingredients"
+          placeholder="Ital vagy hozzávaló keresése"
+          aria-label="Ital vagy hozzávaló keresése"
           autoComplete="off"
           className="h-11 w-full rounded-full bg-panel pr-16 pl-10 text-base text-fg placeholder:text-faint focus:bg-panel-2 focus:outline-none focus-visible:outline-2 focus-visible:outline-accent [&::-webkit-search-cancel-button]:hidden"
         />
@@ -55,7 +55,7 @@ export const FilterBar = forwardRef<HTMLInputElement, FilterBarProps>(function F
           <button
             type="button"
             onClick={() => onQueryChange('')}
-            aria-label="Clear search"
+            aria-label="Keresés törlése"
             className="absolute top-1/2 right-1.5 grid size-8 -translate-y-1/2 place-items-center rounded-full text-muted pointer-coarse:size-10 pointer-coarse:right-0.5 hover:bg-panel-2 hover:text-fg"
           >
             <X className="size-4" />
@@ -67,12 +67,12 @@ export const FilterBar = forwardRef<HTMLInputElement, FilterBarProps>(function F
         )}
       </div>
 
-      <TogglePills label="Base spirit" options={SPIRIT_OPTIONS} value={spirit} onChange={onSpiritChange} />
-      <TogglePills label="Style" options={CATEGORY_OPTIONS} value={category} onChange={onCategoryChange} />
+      <TogglePills label="Alapszesz" options={SPIRIT_OPTIONS} value={spirit} onChange={onSpiritChange} />
+      <TogglePills label="Stílus" options={CATEGORY_OPTIONS} value={category} onChange={onCategoryChange} />
 
       <div className="flex min-h-8 items-center justify-between px-1 text-[13px] text-muted">
         <p aria-live="polite" className="tabular-nums">
-          {isFiltered ? `${resultCount} of ${totalCount} drinks` : `${totalCount} drinks`}
+          {isFiltered ? `${resultCount} / ${totalCount} ital` : `${totalCount} ital`}
         </p>
         {isFiltered && (
           <button
@@ -80,7 +80,7 @@ export const FilterBar = forwardRef<HTMLInputElement, FilterBarProps>(function F
             onClick={onReset}
             className="-mr-2 h-8 rounded-full px-3 text-fg/80 hover:bg-panel hover:text-fg pointer-coarse:h-10"
           >
-            Clear all
+            Szűrők törlése
           </button>
         )}
       </div>

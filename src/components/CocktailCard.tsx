@@ -33,7 +33,7 @@ export function CocktailCard({ cocktail, active, implicit = false }: CocktailCar
           {cocktail.baseSpirit}, {cocktail.category.toLowerCase()}
         </span>
       </span>
-      <span className="mr-1.5 text-[13px] text-faint tabular-nums" title="Approximate ABV">
+      <span className="mr-1.5 text-[13px] text-faint tabular-nums" title="Becsült alkoholtartalom">
         {cocktail.abv}%
       </span>
     </a>

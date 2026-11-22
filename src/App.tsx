@@ -35,7 +35,7 @@ export default function App() {
             (spirit === ALL || c.baseSpirit === spirit) &&
             matchesQuery(c, deferredQuery),
         )
-        .sort((a, b) => a.name.localeCompare(b.name)),
+        .sort((a, b) => a.name.localeCompare(b.name, 'hu')),
     [category, spirit, deferredQuery],
   )
 
@@ -137,7 +137,7 @@ export default function App() {
 
         <div className="px-safe pb-safe mx-auto flex min-h-0 w-full max-w-7xl flex-1 gap-6 md:px-6 md:pb-6">
           <aside
-            aria-label="Drinks"
+            aria-label="Italok"
             className={cn(
               'flex min-h-0 w-full min-w-0 flex-col md:flex md:w-[320px] md:shrink-0 lg:w-[360px]',
               routed && 'hidden',
@@ -171,10 +171,10 @@ export default function App() {
               <div className="flex flex-1 flex-col items-start gap-4 px-1 pt-6">
                 <p className="text-[15px] text-muted">
                   {query
-                    ? `Nothing matches “${query}”. Try an ingredient like lime or Campari.`
-                    : 'No drinks match these filters.'}
+                    ? `Nincs találat erre: „${query}”. Próbálj egy hozzávalót, például limét vagy Camparit.`
+                    : 'Nincs a szűrőknek megfelelő ital.'}
                 </p>
-                <Button onClick={resetFilters}>Clear all filters</Button>
+                <Button onClick={resetFilters}>Összes szűrő törlése</Button>
               </div>
             )}
             <Footer />
@@ -185,7 +185,7 @@ export default function App() {
               <RecipeDetail cocktail={active} prevId={prevId} nextId={nextId} onNavigate={step} />
             ) : (
               <div className="grid h-full place-items-center p-8 text-center text-[15px] text-muted">
-                No drink to show. Clear the filters to see every drink.
+                Nincs megjeleníthető ital. Töröld a szűrőket, hogy mindet lásd.
               </div>
             )}
           </main>

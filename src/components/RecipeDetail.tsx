@@ -5,6 +5,8 @@ import { formatQuantity, recipeToText, totalVolume } from '../lib/recipe'
 import { ChipGroup } from './ui/chip-group'
 import { ActionButton } from './ui/icon-button'
 import { GlassIcon } from './GlassIcon'
+import { StepIcon } from './StepIcon'
+import { STEP_LABELS } from '../data/steps'
 
 const SERVINGS = ['1', '2', '4', '8'] as const
 type Serving = (typeof SERVINGS)[number]
@@ -64,26 +66,26 @@ export function RecipeDetail({ cocktail, prevId, nextId, onNavigate }: RecipeDet
               <span>{cocktail.baseSpirit}</span>
               <span>{cocktail.category}</span>
               <span>{cocktail.strength}</span>
-              <span>About {cocktail.abv}% ABV</span>
+              <span>kb. {cocktail.abv}% alkohol</span>
             </p>
           </header>
 
-          <section aria-label="Servings" className="mt-7 flex md:mt-10 flex-col items-center gap-3">
+          <section aria-label="Adagok" className="mt-7 flex md:mt-10 flex-col items-center gap-3">
             <ChipGroup
-              label="Number of drinks"
+              label="Adagok száma"
               options={SERVINGS}
               value={serving}
               onChange={setServing}
-              describe={(s) => (s === '1' ? '1 drink' : `${s} drinks`)}
+              describe={(s) => `${s} adag`}
             />
             <span className="text-[13px] text-muted">
-              {n === 1 ? '1 drink' : `${n} drinks`}, {totalVolume(cocktail, n)} in total
+              {n} adag, összesen {totalVolume(cocktail, n)}
             </span>
           </section>
 
           <section aria-labelledby="ingredients-heading" className="mt-8 md:mt-10">
             <h3 id="ingredients-heading" className="mb-3 text-lg font-medium">
-              Ingredients
+              Hozzávalók
             </h3>
             <ul className="divide-y divide-white/[0.06] rounded-2xl bg-panel">
               {cocktail.ingredients.map((ing) => (
@@ -94,69 +96,72 @@ export function RecipeDetail({ cocktail, prevId, nextId, onNavigate }: RecipeDet
                   <span className="text-[15px]">
                     {ing.name}
                     {ing.note && <span className="text-muted">, {ing.note}</span>}
-                    {ing.optional && <span className="ml-2 text-[13px] text-faint">optional</span>}
+                    {ing.optional && <span className="ml-2 text-[13px] text-faint">elhagyható</span>}
                   </span>
                 </li>
               ))}
             </ul>
             {n > 2 && (
               <p className="mt-2.5 px-1 text-[13px] text-muted">
-                Shake two drinks at a time at most, so each one gets the right dilution.
+                Egyszerre legfeljebb két adagot rázz, hogy mindegyik megfelelően hígul.
               </p>
             )}
           </section>
 
           <section aria-labelledby="method-heading" className="mt-10">
             <h3 id="method-heading" className="mb-4 text-lg font-medium">
-              Method
+              Elkészítés
             </h3>
-            <ol className="space-y-4">
+            <ol className="grid grid-cols-2 gap-2 min-[420px]:grid-cols-3">
               {cocktail.instructions.map((step, i) => (
-                <li key={i} className="flex gap-4">
-                  <span className="mt-px grid size-6 shrink-0 place-items-center rounded-full bg-panel text-xs text-muted tabular-nums">
-                    {i + 1}
-                  </span>
-                  <p className="text-[15px] leading-relaxed text-fg/90">{step}</p>
+                <li
+                  key={i}
+                  className="relative flex flex-col items-center rounded-2xl bg-panel px-2 pt-4 pb-3 text-center"
+                >
+                  <span className="absolute top-2.5 left-3 text-[11px] text-faint tabular-nums">{i + 1}</span>
+                  <StepIcon action={step.action} className="size-10 text-fg/85" />
+                  <span className="mt-2.5 text-[13px] leading-tight font-medium">{STEP_LABELS[step.action]}</span>
+                  {step.detail && <span className="mt-1 text-[12px] leading-snug text-muted">{step.detail}</span>}
                 </li>
               ))}
             </ol>
           </section>
 
           <dl className="mt-10 grid grid-cols-3 gap-2">
-            <Detail label="Glass" value={cocktail.glassware} />
-            <Detail label="Ice" value={cocktail.ice} />
-            <Detail label="Garnish" value={cocktail.garnish} />
+            <Detail label="Pohár" value={cocktail.glassware} />
+            <Detail label="Jég" value={cocktail.ice} />
+            <Detail label="Díszítés" value={cocktail.garnish} />
           </dl>
 
           <section className="mt-10 space-y-6">
             <div>
-              <h3 className="mb-1.5 text-[13px] text-muted">How it tastes</h3>
+              <h3 className="mb-1.5 text-[13px] text-muted">Ízvilág</h3>
               <p className="text-[15px] leading-relaxed">{cocktail.tastingNotes}</p>
             </div>
             <div>
-              <h3 className="mb-1.5 text-[13px] text-muted">Bartender’s tip</h3>
+              <h3 className="mb-1.5 text-[13px] text-muted">A bármixer tippje</h3>
               <p className="text-[15px] leading-relaxed">{cocktail.bartenderTip}</p>
             </div>
           </section>
         </article>
       </div>
 
-      <nav aria-label="Recipe actions" className="flex justify-center gap-5 pt-3">
+      <nav aria-label="Recept műveletek" className="flex justify-center gap-5 pt-3">
         <ActionButton
           icon={<ChevronLeft className="size-5" />}
-          label="Previous"
+          label="Előző"
           disabled={!prevId}
           onClick={() => prevId && onNavigate(prevId)}
         />
         <ActionButton
           icon={copied ? <Check className="size-5" /> : <Copy className="size-[18px]" />}
-          label={copied ? 'Copied' : 'Copy'}
+          label={copied ? 'Másolva' : 'Másolás'}
           aria-live="polite"
           onClick={copyRecipe}
         />
         <ActionButton
           icon={<ChevronRight className="size-5" />}
-          label="Next"
+          label="Következő"
           disabled={!nextId}
           onClick={() => nextId && onNavigate(nextId)}
         />
